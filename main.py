@@ -1,0 +1,111 @@
+# coding: utf-8
+
+# [] for list
+# () for tuple
+# {} for dictionary
+
+import os
+import random
+from pymongo import MongoClient
+
+def init_db():
+    client = MongoClient('mongodb://localhost:27017/')
+    mydb = client.myFirstMB
+    return mydb
+
+def add_to_db(db, table, record):
+    db[table].insert(record)
+
+def iterate_over_db(db, table):
+    for i, phrase in enumerate(db[table].find()):
+        print("%d. eng: \'%s\' pol: \'%s\'" % (i, phrase["english"], phrase["polish"]))
+
+def get_rendom_entry(db, table):
+    entries = db[table].find()
+    count = entries.count()
+    print(entries[random.randrange(count)])
+
+def record_exists(db, table, eng):
+    if db[table].find_one({"english" : eng}):
+        return True
+    else:
+        return False
+
+mydb = init_db()
+#mydb.phrases.drop()
+
+#add_to_db(mydb, "phrases", record1)
+#add_to_db(mydb, "phrases", record2)
+
+#iterate_over_db(mydb, "phrases")
+
+#one_found = mydb.phrases.find_one({"english" : "delve into"})
+#all_found = mydb.phrases.find({"english" : "delve into"})
+
+#print(one_found["polish"])
+
+#print("Found %d result(s)" % all_found.count())
+
+#for one in all_found:
+    #print(one)
+
+class Phrase:
+    """Class representing single entry in dictionary"""
+    english = ""
+    polish = ""
+
+    def __init__(self, eng, pl):
+        self.english = eng
+        self.polish = pl
+
+decision = 1
+
+while True:
+    os.system("clear")
+    print("""\
+    1. Browse the whole dictionary
+    2. Show random word
+    3. Add phrase to dictionary
+    4. Clear dictionary
+    0. Exit\
+""")
+    decision = input(">> ")
+
+    if decision == "1":
+        iterate_over_db(mydb, "phrases")
+        input()
+        
+    elif decision == "2":
+        get_rendom_entry(mydb, "phrases")
+        input()
+        
+    elif decision == "3":
+        eng = input("english:")
+        pl = input("polish: ")
+
+        if eng != "" and pl != "":
+            print(eng, "means", pl)
+            
+            if record_exists(mydb, "phrases", eng):
+                if input("Record already exists! Update? [y/n] ") == "y":
+                    print("to be implemented")
+                
+            else:
+                print("adding to database...")
+                add_to_db(mydb, "phrases", [{
+                                            "english": eng,
+                                            "polish" : pl
+                                            }])
+                print("...added successfully")
+        else:
+            print("data validation error")
+
+    elif decision == "4":
+        if "y" == input("Are you sure? [y/n] "):
+            print("Dropping")
+            mydb.phrases.drop()
+
+    elif decision == "0":
+        os.system("clear")
+        break
+
