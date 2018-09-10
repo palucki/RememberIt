@@ -63,11 +63,15 @@ decision = 1
 while True:
     os.system("clear")
     print("""\
-    1. Browse the whole dictionary
-    2. Show random word
-    3. Add phrase to dictionary
-    4. Clear dictionary
-    0. Exit\
+*************************************
+*                                   *
+*   1. Browse the whole dictionary  *
+*   2. Show random word             *
+*   3. Add phrase to dictionary     *
+*   4. Clear dictionary             *
+*   0. Exit                         *
+*                                   *
+*************************************
 """)
     decision = input(">> ")
 
@@ -108,4 +112,52 @@ while True:
     elif decision == "0":
         os.system("clear")
         break
+
+
+
+
+import requests
+
+def translate_phrase(phrase, src, dst):
+    translated = "nothing"
+
+    return translated
+
+#https://glosbe.com/gapi/translate?from=pol&dest=eng&format=json&phrase=witaj&pretty=true
+
+#print ("translating...", translate_phrase("coś", "pol", "eng"))
+
+payload = {'from': 'eng', 'dest': 'pol', "format" : "json", "phrase" : "speaker", "pretty" : "true"}
+resp = requests.get('https://glosbe.com/gapi/translate', params=payload).json()
+
+if resp["result"] == "ok":
+    print("Success")
+    contents = resp["tuc"]
+    print(contents)
+   
+    translation = contents["phrase"]["text"]
+    meaning_from = contents["meanings"][0]["text"]
+    meaning_dest = contents["meanings"][1]["text"]
+   
+    print("\n",translation)
+    print("\n",meaning_from)
+    print("\n",meaning_dest)
+
+
+   
+   
+   
+    # meanings = resp["tuc"]
+    # print("samochód", "means", meanings[0]["text"])
+   
+   
+# print(r.url)
+# print(r.text)
+# print(r.json())
+
+# if r.text["result"] == "ok":
+
+    # print(r.text)
+#r = requests.get("https://glosbe.com/gapi/translate?from=pol&dest=eng&format=json&phrase=witaj&pretty=true")
+#print("received response")
 
