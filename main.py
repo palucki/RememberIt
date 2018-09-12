@@ -9,14 +9,12 @@ import random
 from pymongo import MongoClient
 import requests
 
-
 class EnglishPhrase:
     """Class representing single entry in dictionary"""
-    text = ""
-    meanings = []
 
     def __init__(self, text):
         self.text = text
+        self.meanings = []
         
     def __str__(self):
         output = "Word: " + self.text + "\n";
@@ -61,13 +59,19 @@ class GlosbeTranslator:
         else:
             print("Request failed!!!")
 
-def init_db():
-    client = MongoClient('mongodb://localhost:27017/')
-    mydb = client.myFirstMB
-    return mydb
-
-def add_to_db(db, table, record):
-    db[table].insert(record)
+class MongoDbProxy:
+    """Proxy for MongoDB"""
+    
+    def __init__(self, url, dbName, tableName):
+        self.client = MongoClient(url)
+        self.db = self.client[dbName]
+        self.table = tableName
+        
+    def get_db(self):
+        return self.db
+        
+    def add_phrase(self, record):
+        self.db[self.table].insert(record)
 
 def iterate_over_db(db, table):
     for i, phrase in enumerate(db[table].find()):
@@ -84,14 +88,11 @@ def record_exists(db, table, eng):
     else:
         return False
 
+db = MongoDbProxy("mongodb://localhost:27017/", "RepeatItDb", "phrases")
 
-
-
-mydb = init_db()
-decision = 1
-word = "speaker"
+mydb = db.get_db()
 translator = GlosbeTranslator()
-phrase = translator.translate(word)
+decision = 1
 
 while True:
     os.system("clear")
@@ -117,9 +118,15 @@ while True:
         input()
         
     elif decision == "3":
-        eng = input("english:")
-        pl = input("polish: ")
-
+        word = input("translate: ")
+        
+        phrase = translator.translate(word)
+        print(phrase)
+        
+        chosen_meaning_idx = int(input("Which meaning do you want to add to db? [0-%d] " % (len(phrase.meanings)-1)))
+        eng = word
+        pl = phrase.meanings[chosen_meaning_idx]
+        
         if eng != "" and pl != "":
             print(eng, "means", pl)
             
@@ -128,12 +135,7 @@ while True:
                     print("to be implemented")
                 
             else:
-                print("adding to database...")
-                add_to_db(mydb, "phrases", [{
-                                            "english": eng,
-                                            "polish" : pl
-                                            }])
-                print("...added successfully")
+                db.add_phrase([{ "english": eng, "polish" : pl}])
         else:
             print("data validation error")
 
