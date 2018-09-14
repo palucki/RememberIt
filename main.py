@@ -9,8 +9,16 @@ import random
 from pymongo import MongoClient
 import requests
 
+class SimpleEnglishPhrase:
+    """Class representing single entry in user database"""
+
+    def __init__(self, eng, pol):
+        self.eng = eng
+        self.pol = pol
+
+
 class EnglishPhrase:
-    """Class representing single entry in dictionary"""
+    """Class representing single entry from Glosbe"""
 
     def __init__(self, text):
         self.text = text
@@ -72,21 +80,32 @@ class MongoDbProxy:
         
     def add_phrase(self, record):
         self.db[self.table].insert(record)
+        
+    def show_one(self, phrase):
+        print("eng: \'%s\' pol: \'%s\'" % (phrase["english"], phrase["polish"]))
+        
+    def show_all(self):
+        for i, phrase in enumerate(self.db[self.table].find()):
+            print(i, end=" ")
+            self.show_one(phrase)
 
-def iterate_over_db(db, table):
-    for i, phrase in enumerate(db[table].find()):
-        print("%d. eng: \'%s\' pol: \'%s\'" % (i, phrase["english"], phrase["polish"]))
-
-def get_rendom_entry(db, table):
-    entries = db[table].find()
-    count = entries.count()
-    print(entries[random.randrange(count)])
-
-def record_exists(db, table, eng):
-    if db[table].find_one({"english" : eng}):
-        return True
-    else:
-        return False
+    def show_random(self):
+        entries = self.db[self.table].find()
+        count = entries.count()
+        if count > 0:
+            self.show_one(entries[random.randrange(count)])
+        else:
+            print("Database is empty")
+        
+    def record_exists(self, eng):
+        if self.db[self.table].find_one({"english" : eng}):
+            return True
+        else:
+            return False
+            
+    def drop_db(self):
+        print("Dropping")
+        self.db.self.table.drop()
 
 db = MongoDbProxy("mongodb://localhost:27017/", "RepeatItDb", "phrases")
 
@@ -110,11 +129,12 @@ while True:
     decision = input(">> ")
 
     if decision == "1":
-        iterate_over_db(mydb, "phrases")
+        db.show_all()
+        #iterate_over_db(mydb, "phrases")
         input()
         
     elif decision == "2":
-        get_rendom_entry(mydb, "phrases")
+        db.show_random()
         input()
         
     elif decision == "3":
@@ -127,10 +147,8 @@ while True:
         eng = word
         pl = phrase.meanings[chosen_meaning_idx]
         
-        if eng != "" and pl != "":
-            print(eng, "means", pl)
-            
-            if record_exists(mydb, "phrases", eng):
+        if eng != "" and pl != "":           
+            if db.record_exists(eng):
                 if input("Record already exists! Update? [y/n] ") == "y":
                     print("to be implemented")
                 
