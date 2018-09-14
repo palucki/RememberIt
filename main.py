@@ -120,8 +120,9 @@ while True:
 *                                   *
 *   1. Browse the whole dictionary  *
 *   2. Show random word             *
-*   3. Add phrase to dictionary     *
-*   4. Clear dictionary             *
+*   3. Translate phrase             *
+*   4. Add phrase to dictionary     *
+*   5. Clear dictionary             *
 *   0. Exit                         *
 *                                   *
 *************************************
@@ -136,8 +137,14 @@ while True:
     elif decision == "2":
         db.show_random()
         input()
-        
+    
     elif decision == "3":
+        word = input("translate: ")
+        phrase = translator.translate(word)
+        print(phrase)
+        input()
+    
+    elif decision == "4":
         word = input("translate: ")
         
         phrase = translator.translate(word)
