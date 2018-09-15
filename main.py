@@ -8,6 +8,7 @@ import os
 import random
 from pymongo import MongoClient
 import requests
+import tkinter
 
 class SimpleEnglishPhrase:
     """Class representing single entry in user database"""
@@ -74,26 +75,37 @@ class MongoDbProxy:
         self.client = MongoClient(url)
         self.db = self.client[dbName]
         self.table = tableName
+        self.count = self.db[self.table].find().count()
         
     def get_db(self):
         return self.db
         
     def add_phrase(self, record):
         self.db[self.table].insert(record)
+        self.count = self.db[self.table].find().count()
         
     def show_one(self, phrase):
         print("eng: \'%s\' pol: \'%s\'" % (phrase["english"], phrase["polish"]))
         
-    def show_all(self):
+    def get_all(self):
+        words = []
         for i, phrase in enumerate(self.db[self.table].find()):
-            print(i, end=" ")
-            self.show_one(phrase)
+            words.append(phrase)
+        return words
+            
+    def show_all(self):
+        if self.count > 0:
+            for i, phrase in enumerate(self.db[self.table].find()):
+                print(i, end=" ")
+                self.show_one(phrase)
+        else:
+            print("Database is empty")
 
     def show_random(self):
         entries = self.db[self.table].find()
-        count = entries.count()
-        if count > 0:
-            self.show_one(entries[random.randrange(count)])
+        self.count = entries.count()
+        if self.count > 0:
+            self.show_one(entries[random.randrange(self.count)])
         else:
             print("Database is empty")
         
@@ -106,16 +118,11 @@ class MongoDbProxy:
     def drop_db(self):
         print("Dropping")
         self.db.self.table.drop()
+        self.count = self.db[self.table].find().count()
 
-db = MongoDbProxy("mongodb://localhost:27017/", "RepeatItDb", "phrases")
 
-mydb = db.get_db()
-translator = GlosbeTranslator()
-decision = 1
 
-while True:
-    os.system("clear")
-    print("""\
+mainBanner = """\
 *************************************
 *                                   *
 *   1. Browse the whole dictionary  *
@@ -125,51 +132,116 @@ while True:
 *   5. Clear dictionary             *
 *   0. Exit                         *
 *                                   *
-*************************************
-""")
-    decision = input(">> ")
+*************************************\
+"""
 
-    if decision == "1":
-        db.show_all()
-        #iterate_over_db(mydb, "phrases")
-        input()
+db = MongoDbProxy("mongodb://localhost:27017/", "RepeatItDb", "phrases")
+
+translator = GlosbeTranslator()
+#decision = 1
+
+#while True:
+    #os.system("clear")
+    #print(mainBanner)
+    #decision = input(">> ")
+
+    #if decision == "1":
+        #db.show_all()
+        #input()
         
-    elif decision == "2":
-        db.show_random()
-        input()
+    #elif decision == "2":
+        #db.show_random()
+        #input()
     
-    elif decision == "3":
-        word = input("translate: ")
-        phrase = translator.translate(word)
-        print(phrase)
-        input()
+    #elif decision == "3":
+        #word = input("translate: ")
+        #phrase = translator.translate(word)
+        #print(phrase)
+        #input()
     
-    elif decision == "4":
-        word = input("translate: ")
+    #elif decision == "4":
+        #word = input("translate: ")
         
-        phrase = translator.translate(word)
-        print(phrase)
+        #phrase = translator.translate(word)
+        #print(phrase)
         
-        chosen_meaning_idx = int(input("Which meaning do you want to add to db? [0-%d] " % (len(phrase.meanings)-1)))
-        eng = word
-        pl = phrase.meanings[chosen_meaning_idx]
+        #chosen_meaning_idx = int(input("Which meaning do you want to add to db? [0-%d] " % (len(phrase.meanings)-1)))
+        #eng = word
+        #pl = phrase.meanings[chosen_meaning_idx]
         
-        if eng != "" and pl != "":           
-            if db.record_exists(eng):
-                if input("Record already exists! Update? [y/n] ") == "y":
-                    print("to be implemented")
+        #if eng != "" and pl != "":           
+            #if db.record_exists(eng):
+                #if input("Record already exists! Update? [y/n] ") == "y":
+                    #print("to be implemented")
                 
-            else:
-                db.add_phrase([{ "english": eng, "polish" : pl}])
-        else:
-            print("data validation error")
+            #else:
+                #db.add_phrase([{ "english": eng, "polish" : pl}])
+        #else:
+            #print("data validation error")
 
-    elif decision == "4":
-        if "y" == input("Are you sure? [y/n] "):
-            print("Dropping")
-            mydb.phrases.drop()
+    #elif decision == "4":
+        #if "y" == input("Are you sure? [y/n] "):
+            #print("Dropping")
+            #mydb.phrases.drop()
 
-    elif decision == "0":
-        os.system("clear")
-        break
+    #elif decision == "0":
+        #os.system("clear")
+        #break
+
+#exit(1)
+
+class AppWindow():
+
+    def __init__(self, db):
+        self.db = db;
+        self.root = tkinter.Tk()
+        self.root.title("Repeat It")
+        self.root.geometry("350x300")
+        self.frame = tkinter.Frame(self.root)
+        self.frame.pack()
+
+        self.mainLabel = tkinter.Label(self.frame, text="Repeat It - learn new english words easily & efficently")
+        self.mainLabel.pack(fill=tkinter.X, ipady=20, padx=10)
+
+        self.actions = [("Browse the whole dictionary", self.show_all),
+                        ("Show random word", db.show_random),
+                        ("Translate phrase", lambda: translator.translate("error")),
+                        ##("Add phrase to dictionary",
+                        ##("Clear dictionary",
+                        ("Quit", lambda : quit())
+                       ]
+
+        self.buttons = []
+
+        for (label, cmd) in self.actions:
+            self.buttons.append(tkinter.Button(self.frame, 
+                                text=label, 
+                                fg="black",
+                                command=cmd))
+
+        self.show_main()
+
+    def show_main(self):
+        self.mainLabel.pack(fill=tkinter.X, pady=10, padx=10)
+        for but in self.buttons:
+            but.pack(fill=tkinter.X, pady=10, padx=50)
+    
+    def show_all(self):
+        #Update view
+        for but in self.buttons:
+            but.pack_forget()
+        
+        #get data from db
+        phrases = self.db.get_all()
+        for i, phrase in enumerate(phrases):
+            
+            
+            
+            print("eng: \'%s\' pol: \'%s\'" % (phrase["english"], phrase["polish"]))
+    
+    def run(self):
+        self.root.mainloop()
+
+app = AppWindow(db)
+app.run()
 
