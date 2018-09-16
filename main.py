@@ -194,15 +194,19 @@ class BaseView:
     """Base class for all screens"""
     def __init__(self):
         print("Base ctor")
+        
+    def set_actions(self, actions):
+        print("setting actions")
+        self.actions = actions
 
 class MainMenuView(BaseView):
     """Main menu"""
-    def __init__(self, actions, frame):
+    def __init__(self):
         BaseView.__init__(self)
         print("MainMenu ctor")
-        
+     
+    def build_into(self, frame):
         self.mainLabel = tkinter.Label(frame, text="Repeat It - learn new english words easily & efficently")
-        self.actions = actions 
         self.buttons = []
 
         for (label, cmd) in self.actions:
@@ -223,14 +227,13 @@ class MainMenuView(BaseView):
         
 class ShowWordView(BaseView):
     """Showing words menu"""
-    def __init__(self, actions, frame):
+    def __init__(self):
         BaseView.__init__(self)
         print("Show Words ctor")
-        
+    
+    def build_into(self, frame):    
         self.mainLabel = tkinter.Label(frame, text="Browse dictionary")
-
         
-        self.actions = actions 
         self.buttons = []
 
         for (label, cmd) in self.actions:
@@ -251,14 +254,17 @@ class ShowWordView(BaseView):
 
 class Controller:
     """Controler responsible for interactions between data and views"""
-    def __init__(self):
+    def __init__(self, views):
         self.root = tkinter.Tk()
         self.init_root()
 
-        self.init_mainMenuView()
-        self.init_wordsView()
+        self.views = views
+
+        for name in self.views.keys():
+            self.views[name].set_actions(self.get_actions_for(name))
+            self.views[name].build_into(self.frame)
         
-        self.currentView = self.mainMenuView
+        self.currentView = self.views["main_menu"]
         self.currentView.show()
     
     def init_root(self):
@@ -266,122 +272,46 @@ class Controller:
         self.root.geometry("350x300")
         self.frame = tkinter.Frame(self.root)
         self.frame.pack()
-
         
-    def init_mainMenuView(self):
-        actions = [("Browse words", self.show_words),
-                    ("Show main", self.show_main),
-                    #("Translate phrase", lambda: translator.translate("error")),
-                    ("Quit", self.root.destroy)
-                    ##("Add phrase to dictionary",
-                    ##("Clear dictionary",
-                    ]
-        self.mainMenuView = MainMenuView(actions, self.frame)
+    def get_actions_for(self, view_name):
+        if view_name == "main_menu":
+            return self.get_main_menu_actions()
+        elif view_name == "show_words":
+            return self.get_words_actions()
+        else:
+            print("No actions found")
+            exit(1)
+        
+    def get_main_menu_actions(self):
+        return  [("Browse words", self.show_words),
+                  ("Show main", self.show_main),
+                 #("Translate phrase", lambda: translator.translate("error")),
+                  ("Quit", self.root.destroy)
+                 ##("Add phrase to dictionary",
+                  ##("Clear dictionary",
+                ]
 
-    def init_wordsView(self):
-        actions = [("Go back", self.show_main),
-                   ("Quit", self.root.destroy)]
-        self.wordsView = ShowWordView(actions, self.frame)
+    def get_words_actions(self):
+        return [("Go back", self.show_main),
+                ("Quit", self.root.destroy)]
         
     def show_words(self):
         self.currentView.hide()
-        self.currentView = self.wordsView
+        self.currentView = self.views["show_words"]
         self.currentView.show()
         
     def show_main(self):
         self.currentView.hide()
-        self.currentView = self.mainMenuView
+        self.currentView = self.views["main_menu"]
         self.currentView.show()
         
     def run(self):
         self.root.mainloop() 
-    
-    
-app = Controller()
+
+
+app = Controller({"main_menu" : MainMenuView(), 
+                  "show_words": ShowWordView()})
 app.run()
 #currentView.root.mainloop()
 
 exit(1)
-
-class AAWindow():
-
-    def __init__(self, db):
-        self.db = db;
-        self.root = tkinter.Tk()
-        self.root.title("Repeat It")
-        self.root.geometry("350x300")
-        self.frame = tkinter.Frame(self.root)
-        self.frame.pack()
-
-        self.mainLabel = tkinter.Label(self.frame, text="Repeat It - learn new english words easily & efficently")
-        self.mainLabel.pack(fill=tkinter.X, ipady=20, padx=10)
-
-        self.actions = [("Browse the whole dictionary", self.show_all),
-                        ("Show random word", db.show_random),
-                        ("Translate phrase", lambda: translator.translate("error")),
-                        ("Quit", self.root.destroy)
-                        ##("Add phrase to dictionary",
-                        ##("Clear dictionary",
-                       ]
-
-        self.buttons = []
-
-        for (label, cmd) in self.actions:
-            self.buttons.append(tkinter.Button(self.frame, 
-                                text=label, 
-                                fg="black",
-                                command=cmd))
-
-        self.show_main()
-
-    def show_main(self):
-        self.mainLabel.pack(fill=tkinter.X, pady=10, padx=10)
-        for but in self.buttons:
-            but.pack(fill=tkinter.X, pady=10, padx=50)
-    
-    def show_all(self):
-        #Update view
-        for but in self.buttons:
-            but.pack_forget()
-        
-        #get data from db
-        phrases = self.db.get_all()
-        for i, phrase in enumerate(phrases):
-            
-            
-            
-            print("eng: \'%s\' pol: \'%s\'" % (phrase["english"], phrase["polish"]))        
-    
-    def run(self):
-        self.root.mainloop()
-
-class MainMenuWindow(AAWindow):
-    """Main menu with possible user actions"""
-    def __init__(self):
-        #create __init__ for base 
-        
-        print("created main menu")
-  #e      print(self.root)
-    #def show(self):
-        #self.mainLabel.pack(fill=tkinter.X, pady=10, padx=10)
-        #for but in self.buttons:
-            #but.pack(fill=tkinter.X, pady=10, padx=50)
-    
-
-main = MainMenuWindow()
-
-app = AAWindow(db)
-app.run()
-
-#zrobic tutaj model, view, controller.
-#na pierwszy rzut oka wydaje sie ze model i view do odpowiednio dane i ekrany, a controller to cos co tym zarzadza
-#controller przyjmowalby oba jako parametry???
-
-#And in a web app:
-
-    #A user requests to view a page by entering a URL.
-    #The Controller receives that request.
-    #It uses the Models to retrieve all of the necessary data, organizes it, and sends it off to the…
-    #View, which then uses that data to render the final webpage presented to the the user in their browser.
-
-
