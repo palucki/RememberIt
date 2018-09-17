@@ -9,6 +9,7 @@ import random
 from pymongo import MongoClient
 import requests
 import tkinter
+from tkinter import ttk
 
 class SimpleEnglishPhrase:
     """Class representing single entry in user database"""
@@ -68,6 +69,28 @@ class GlosbeTranslator:
         else:
             print("Request failed!!!")
 
+class Observable:
+    def __init__(self, initial=None):
+        self.data = initial
+        self.callbacks = {}
+        
+    def addCallback(self, func):
+        self.callbacks[func] = 1;
+        
+    def delCallback(self, func):
+        del self.callbacks[func];
+
+    def doCallbacks(self):
+        for func in self.callbacks:
+            func(self.data)
+            
+    def setData(self, data):
+        self.data = data
+        self.doCallbacks()
+
+#create concrete Observable (Words or similiar)
+#add callback to view
+        
 class MongoDbProxy:
     """Proxy for MongoDB"""
     
@@ -91,6 +114,7 @@ class MongoDbProxy:
         words = []
         for i, phrase in enumerate(self.db[self.table].find()):
             words.append(phrase)
+
         return words
             
     def show_all(self):
@@ -119,7 +143,6 @@ class MongoDbProxy:
         print("Dropping")
         self.db.self.table.drop()
         self.count = self.db[self.table].find().count()
-
 
 
 mainBanner = """\
@@ -234,6 +257,13 @@ class ShowWordView(BaseView):
     def build_into(self, frame):    
         self.mainLabel = tkinter.Label(frame, text="Browse dictionary")
         
+        self.combo = ttk.Combobox(frame)
+        self.combo["values"] = ()
+        self.combo["state"] = 'readonly'
+        
+        self.means_label = tkinter.Label(frame, text="means")
+        self.meaning = tkinter.Label(frame, text="")
+        
         self.buttons = []
 
         for (label, cmd) in self.actions:
@@ -241,23 +271,43 @@ class ShowWordView(BaseView):
                                 text=label, 
                                 fg="black",
                                 command=cmd))
-  
+
+    def set_words(self, words):
+        self.words = words
+
     def show(self):
         self.mainLabel.pack(fill=tkinter.X, ipady=20, padx=10)
+        self.combo.pack(fill = tkinter.X)
+        
+        self.means_label.pack(fill=tkinter.X, ipady=20, padx=10)
+        self.meaning.pack(fill=tkinter.X, ipady=20, padx=10)
+        
+        #It should be somewhere else
+        self.combo["values"] = ()
+        for entry in self.words:
+            self.combo["values"] = self.combo["values"] + (entry["english"], )
+        
+        if len(self.combo["values"]) > 0:
+            self.combo.current(0)
+        
         for but in self.buttons:
             but.pack(fill=tkinter.X, pady=10, padx=50)
             
     def hide(self):
         self.mainLabel.pack_forget()
+        self.combo.pack_forget()
+        self.means_label.pack_forget()
+        self.meaning.pack_forget()
         for but in self.buttons:
             but.pack_forget()
 
 class Controller:
     """Controler responsible for interactions between data and views"""
-    def __init__(self, views):
+    def __init__(self, views, db_proxy):
         self.root = tkinter.Tk()
         self.init_root()
-
+    
+        self.model = db_proxy
         self.views = views
 
         for name in self.views.keys():
@@ -281,7 +331,7 @@ class Controller:
         else:
             print("No actions found")
             exit(1)
-        
+
     def get_main_menu_actions(self):
         return  [("Browse words", self.show_words),
                   ("Show main", self.show_main),
@@ -298,6 +348,10 @@ class Controller:
     def show_words(self):
         self.currentView.hide()
         self.currentView = self.views["show_words"]
+        
+        #add observer or something similiar. Now do it here
+        self.currentView.set_words(self.model.get_all())
+        
         self.currentView.show()
         
     def show_main(self):
@@ -310,8 +364,7 @@ class Controller:
 
 
 app = Controller({"main_menu" : MainMenuView(), 
-                  "show_words": ShowWordView()})
+                  "show_words": ShowWordView()},
+                  db)
 app.run()
 #currentView.root.mainloop()
-
-exit(1)
