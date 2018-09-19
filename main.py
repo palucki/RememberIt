@@ -299,9 +299,12 @@ class ShowWordView(BaseView):
     def build_into(self, frame):    
         self.mainLabel = tkinter.Label(frame, text="Browse dictionary")
         
-        self.combo = ttk.Combobox(frame)
+        self.strvariable = tkinter.StringVar()
+        
+        self.combo = ttk.Combobox(frame, textvariable=self.strvariable)
         self.combo["values"] = ()
         self.combo["state"] = 'readonly'
+        self.combo.bind('<<ComboboxSelected>>', self.updateCurrenttlyDisplayed)
         
         self.means_label = tkinter.Label(frame, text="means")
         self.meaning = tkinter.Label(frame, text="")
@@ -313,6 +316,10 @@ class ShowWordView(BaseView):
                                 text=label, 
                                 fg="black",
                                 command=cmd))
+
+    def updateCurrenttlyDisplayed(self, event):
+        #print (self.strvariable)
+        self.meaning["text"] = self.words[self.combo["values"][self.combo.current()]]
 
     def set_words(self, words):
         self.words = words
@@ -397,7 +404,6 @@ class Controller:
         
         #add observer or something similiar. Now do it here
         self.currentView.set_words(self.model.getAllWords())
-        
         
         
         
