@@ -300,7 +300,7 @@ class ShowWordView(BaseView):
         print("Show Words ctor")
     
     def build_into(self, frame):    
-        self.mainLabel = tkinter.Label(frame, text="Browse dictionary")
+        self.mainLabel = tkinter.Label(frame, text="Browse dictionary", bg="#339999")
         
         self.strvariable = tkinter.StringVar()
         
@@ -309,8 +309,8 @@ class ShowWordView(BaseView):
         self.combo["state"] = 'readonly'
         self.combo.bind('<<ComboboxSelected>>', self.updateCurrenttlyDisplayed)
         
-        self.means_label = tkinter.Label(frame, text="means")
-        self.meaning = tkinter.Label(frame, text="")
+        self.means_label = tkinter.Label(frame, text="means", bg="#339999")
+        self.meaning = tkinter.Label(frame, text="", bg="lightgray")
         
         self.buttons = []
 
@@ -331,8 +331,8 @@ class ShowWordView(BaseView):
         self.mainLabel.pack(fill=tkinter.X, ipady=20, padx=10)
         self.combo.pack(fill = tkinter.X)
         
-        self.means_label.pack(fill=tkinter.X, ipady=20, padx=10)
-        self.meaning.pack(fill=tkinter.X, ipady=20, padx=10)
+        self.means_label.pack(fill=tkinter.X, ipady=5, padx=10)
+        self.meaning.pack(fill=tkinter.X, ipady=10, padx=10)
         
         #It should be somewhere else
         self.combo["values"] = ()
@@ -392,7 +392,7 @@ class Controller:
 
     def get_main_menu_actions(self):
         return  [("Browse words", self.show_words),
-                  ("add word", self.addWord),
+                  ("Add new word", self.addWord),
                  #("Translate phrase", lambda: translator.translate("error")),
                   ("Quit", self.root.destroy)
                  ##("Add phrase to dictionary",
