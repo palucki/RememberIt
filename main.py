@@ -273,7 +273,7 @@ class MainMenuView(BaseView):
     def build_into(self, frame):
         self.mainLabel = tkinter.Label(frame, 
                                        text="Repeat It - learn new english words easily & efficently",
-                                       bg="#336E99")
+                                       bg="#339999")
         self.buttons = []
 
         for (label, cmd) in self.actions:
@@ -342,7 +342,7 @@ class ShowWordView(BaseView):
         if len(self.combo["values"]) > 0:
             self.combo.current(0)
             
-        self.meaning["text"] = self.words[key][0] #TODO remove 0, update correctly
+        self.updateCurrenttlyDisplayed(None)
         
         for but in self.buttons:
             but.pack(fill=tkinter.X, pady=10, padx=50)
@@ -378,7 +378,7 @@ class Controller:
         self.root.title("Repeat It")
         self.root.geometry("350x300")
         self.frame = tkinter.Frame(self.root)
-        self.frame.configure(background='#336E99')
+        self.frame.configure(background='#339999') 
         self.frame.pack()
         
     def get_actions_for(self, view_name):
