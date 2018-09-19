@@ -271,13 +271,16 @@ class MainMenuView(BaseView):
         print("MainMenu ctor")
      
     def build_into(self, frame):
-        self.mainLabel = tkinter.Label(frame, text="Repeat It - learn new english words easily & efficently")
+        self.mainLabel = tkinter.Label(frame, 
+                                       text="Repeat It - learn new english words easily & efficently",
+                                       bg="#336E99")
         self.buttons = []
 
         for (label, cmd) in self.actions:
             self.buttons.append(tkinter.Button(frame, 
                                 text=label, 
                                 fg="black",
+                                bg="#33996E",
                                 command=cmd))
 
     def show(self):
@@ -356,6 +359,7 @@ class Controller:
     """Controler responsible for interactions between data and views"""
     def __init__(self, views, model):
         self.root = tkinter.Tk()
+        self.root.configure(background="#339999")
         self.init_root()
     
         self.model = model
@@ -374,6 +378,7 @@ class Controller:
         self.root.title("Repeat It")
         self.root.geometry("350x300")
         self.frame = tkinter.Frame(self.root)
+        self.frame.configure(background='#336E99')
         self.frame.pack()
         
     def get_actions_for(self, view_name):
