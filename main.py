@@ -11,13 +11,20 @@ import requests
 import tkinter
 from tkinter import ttk
 
-class SimpleEnglishPhrase:
-    """Class representing single entry in user database"""
+class Phrase:
+    """Class representing single entry in model (database)"""
 
-    def __init__(self, eng, pol):
+    def __init__(self, eng, lang, meanings):
         self.eng = eng
-        self.pol = pol
+        self.lang = lang
+        self.meanings = meanings
 
+    def __str__(self):
+        output = "Word: " + self.eng + "in " + lang + "\n";
+        for idx, meaning in enumerate(self.meanings):
+            output += "%3d. %s\n" % (idx, meaning)
+            
+        return output
 
 class EnglishPhrase:
     """Class representing single entry from Glosbe"""
@@ -70,7 +77,7 @@ class GlosbeTranslator:
             print("Request failed!!!")
 
 class Observable:
-    def __init__(self, initial=None):
+    def __init__(self, initial={}):
         self.data = initial
         self.callbacks = {}
         
@@ -87,6 +94,36 @@ class Observable:
     def setData(self, data):
         self.data = data
         self.doCallbacks()
+        
+    def getData(self):
+        return self.data
+
+
+
+class Model:
+    """That needs a table of pairs - eng and its meanings"""
+    def __init__(self):
+        self.phrases = Observable({})
+        self.db = MongoDbProxy("mongodb://localhost:27017/", "RepeatItDb", "phrases")
+        
+        data = self.db.get_all()
+        self.phrases.setData(data)
+        
+        #for key in db_phrases.keys():            
+            #self.addWord(Phrase(key, "polish", db_phrases[key]))
+            
+        #fetch all the data and save it in self.phrases then
+        
+    def addWord(self, key, lang, meanings):
+        newData = self.phrases.getData()
+        newData[key] = meanings
+        self.phrases.setData(newData)
+    
+    def getAllWords(self):
+        return self.phrases.getData()
+    
+    def removeWord(self, phrase):
+        print("Model::removeWord TO BE IMPLEMENTED")
 
 #create concrete Observable (Words or similiar)
 #add callback to view
@@ -111,9 +148,14 @@ class MongoDbProxy:
         print("eng: \'%s\' pol: \'%s\'" % (phrase["english"], phrase["polish"]))
         
     def get_all(self):
-        words = []
+        #define your data struct here
+        words = {}
         for i, phrase in enumerate(self.db[self.table].find()):
-            words.append(phrase)
+            eng = phrase["english"]
+            lang = phrase["lang"]
+            meanings = phrase[lang]
+            
+            words[eng] = meanings
 
         return words
             
@@ -158,8 +200,8 @@ mainBanner = """\
 *************************************\
 """
 
-db = MongoDbProxy("mongodb://localhost:27017/", "RepeatItDb", "phrases")
 
+dictionary = Model()
 translator = GlosbeTranslator()
 #decision = 1
 
@@ -284,11 +326,13 @@ class ShowWordView(BaseView):
         
         #It should be somewhere else
         self.combo["values"] = ()
-        for entry in self.words:
-            self.combo["values"] = self.combo["values"] + (entry["english"], )
+        for key in self.words.keys():
+            self.combo["values"] = self.combo["values"] + (key, )
         
         if len(self.combo["values"]) > 0:
             self.combo.current(0)
+            
+        self.meaning["text"] = self.words[key][0] #TODO remove 0, update correctly
         
         for but in self.buttons:
             but.pack(fill=tkinter.X, pady=10, padx=50)
@@ -303,11 +347,13 @@ class ShowWordView(BaseView):
 
 class Controller:
     """Controler responsible for interactions between data and views"""
-    def __init__(self, views, db_proxy):
+    def __init__(self, views, model):
         self.root = tkinter.Tk()
         self.init_root()
     
-        self.model = db_proxy
+        self.model = model
+        self.model.phrases.addCallback(self.updateWords)
+        
         self.views = views
 
         for name in self.views.keys():
@@ -334,7 +380,7 @@ class Controller:
 
     def get_main_menu_actions(self):
         return  [("Browse words", self.show_words),
-                  ("Show main", self.show_main),
+                  ("add word", self.addWord),
                  #("Translate phrase", lambda: translator.translate("error")),
                   ("Quit", self.root.destroy)
                  ##("Add phrase to dictionary",
@@ -350,9 +396,20 @@ class Controller:
         self.currentView = self.views["show_words"]
         
         #add observer or something similiar. Now do it here
-        self.currentView.set_words(self.model.get_all())
+        self.currentView.set_words(self.model.getAllWords())
+        
+        
+        
         
         self.currentView.show()
+        
+    def updateWords(self, data):
+        print("will update words database")    
+        self.views["show_words"].set_words(self.model.getAllWords())
+        
+    def addWord(self):
+        print("will add word: bee to model")
+        self.model.addWord("bee", "polish", "pszczoła")
         
     def show_main(self):
         self.currentView.hide()
@@ -365,6 +422,6 @@ class Controller:
 
 app = Controller({"main_menu" : MainMenuView(), 
                   "show_words": ShowWordView()},
-                  db)
+                  dictionary)
 app.run()
 #currentView.root.mainloop()
