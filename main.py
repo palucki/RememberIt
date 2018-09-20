@@ -259,65 +259,69 @@ class BaseView:
     """Base class for all screens"""
     def set_actions(self, actions):
         self.actions = actions
+        
+    def createFrame(self, root, params={}):
+        self.frame = tkinter.Frame(root)
+        self.frame.configure(background='white') 
+        
+    def show(self):
+        self.frame.pack()
+        
+    def hide(self):
+        self.frame.pack_forget()
 
 class MainMenuView(BaseView):
     """Main menu"""
     
-    def build_into(self, frame):
-        self.mainLabel = tkinter.Label(frame, 
+    def build_into(self, root):
+        self.createFrame(root)
+        
+        self.mainLabel = tkinter.Label(self.frame, 
                                        text="Repeat It - learn new english words easily & efficently",
                                        bg="#339999")
         self.buttons = []
 
         for (label, cmd) in self.actions:
-            self.buttons.append(tkinter.Button(frame, 
+            self.buttons.append(tkinter.Button(self.frame, 
                                 text=label, 
                                 fg="black",
                                 bg="#33996E",
                                 command=cmd))
 
-    def show(self):
         self.mainLabel.pack(fill=tkinter.X, ipady=20, padx=10)
         for but in self.buttons:
             but.pack(fill=tkinter.X, pady=10, padx=50)
-            
-    def hide(self):
-        self.mainLabel.pack_forget()
-        for but in self.buttons:
-            but.pack_forget()
         
 class ShowWordView(BaseView):
     """Showing words menu"""
     
-    def build_into(self, frame):    
-        self.mainLabel = tkinter.Label(frame, text="Browse dictionary", bg="#339999")
+    def build_into(self, root):
+        
+        self.createFrame(root)
+        #self.frame = tkinter.Frame(root)
+        #self.frame.configure(background='#339999') 
+        #self.frame.pack()
+        
+        self.mainLabel = tkinter.Label(self.frame, text="Browse dictionary", bg="#339999")
         
         self.strvariable = tkinter.StringVar()
         
-        self.combo = ttk.Combobox(frame, textvariable=self.strvariable)
+        self.combo = ttk.Combobox(self.frame, textvariable=self.strvariable)
         self.combo["values"] = ()
         self.combo["state"] = 'readonly'
         self.combo.bind('<<ComboboxSelected>>', self.updateCurrenttlyDisplayed)
         
-        self.means_label = tkinter.Label(frame, text="means", bg="#339999")
-        self.meaning = tkinter.Label(frame, text="", bg="lightgray")
+        self.means_label = tkinter.Label(self.frame, text="means", bg="#339999")
+        self.meaning = tkinter.Label(self.frame, text="", bg="lightgray")
         
         self.buttons = []
 
         for (label, cmd) in self.actions:
-            self.buttons.append(tkinter.Button(frame, 
+            self.buttons.append(tkinter.Button(self.frame, 
                                 text=label, 
                                 fg="black",
                                 command=cmd))
 
-    def updateCurrenttlyDisplayed(self, event):
-        #print (self.strvariable)
-        self.meaning["text"] = self.words[self.combo["values"][self.combo.current()]]
-
-    def set_words(self, words):
-        self.words = words
-
-    def show(self):
         self.mainLabel.pack(fill=tkinter.X, ipady=20, padx=10)
         self.combo.pack(fill = tkinter.X)
         
@@ -336,14 +340,13 @@ class ShowWordView(BaseView):
         
         for but in self.buttons:
             but.pack(fill=tkinter.X, pady=10, padx=50)
-            
-    def hide(self):
-        self.mainLabel.pack_forget()
-        self.combo.pack_forget()
-        self.means_label.pack_forget()
-        self.meaning.pack_forget()
-        for but in self.buttons:
-            but.pack_forget()
+
+    def updateCurrenttlyDisplayed(self, event):
+        #print (self.strvariable)
+        self.meaning["text"] = self.words[self.combo["values"][self.combo.current()]]
+
+    def set_words(self, words):
+        self.words = words
 
 class Controller:
     """Controler responsible for interactions between data and views"""
@@ -357,19 +360,21 @@ class Controller:
         
         self.views = views
 
+        #add observer or something similiar. Now do it here
+        self.views["show_words"].set_words(self.model.getAllWords())
+
         for name in self.views.keys():
             self.views[name].set_actions(self.get_actions_for(name))
-            self.views[name].build_into(self.frame)
+            self.views[name].build_into(self.root)
         
         self.currentView = self.views["main_menu"]
         self.currentView.show()
     
+        
+    
     def init_root(self):
         self.root.title("Repeat It")
         self.root.geometry("350x300")
-        self.frame = tkinter.Frame(self.root)
-        self.frame.configure(background='#339999') 
-        self.frame.pack()
         
     def get_actions_for(self, view_name):
         if view_name == "main_menu":
@@ -393,12 +398,10 @@ class Controller:
         return [("Go back", self.show_main),
                 ("Quit", self.root.destroy)]
         
-    def show_words(self):
+    def show_words(self):    
         self.currentView.hide()
         self.currentView = self.views["show_words"]
         
-        #add observer or something similiar. Now do it here
-        self.currentView.set_words(self.model.getAllWords())
         
         self.currentView.show()
         
