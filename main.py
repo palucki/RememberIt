@@ -257,19 +257,12 @@ translator = GlosbeTranslator()
 
 class BaseView:
     """Base class for all screens"""
-    def __init__(self):
-        print("Base ctor")
-        
     def set_actions(self, actions):
-        print("setting actions")
         self.actions = actions
 
 class MainMenuView(BaseView):
     """Main menu"""
-    def __init__(self):
-        BaseView.__init__(self)
-        print("MainMenu ctor")
-     
+    
     def build_into(self, frame):
         self.mainLabel = tkinter.Label(frame, 
                                        text="Repeat It - learn new english words easily & efficently",
@@ -295,9 +288,6 @@ class MainMenuView(BaseView):
         
 class ShowWordView(BaseView):
     """Showing words menu"""
-    def __init__(self):
-        BaseView.__init__(self)
-        print("Show Words ctor")
     
     def build_into(self, frame):    
         self.mainLabel = tkinter.Label(frame, text="Browse dictionary", bg="#339999")
@@ -409,8 +399,6 @@ class Controller:
         
         #add observer or something similiar. Now do it here
         self.currentView.set_words(self.model.getAllWords())
-        
-        
         
         self.currentView.show()
         
