@@ -272,7 +272,7 @@ class BaseView:
 
 class MainMenuView(BaseView):
     """Main menu"""
-    
+
     def build_into(self, root):
         self.createFrame(root)
         
@@ -296,11 +296,7 @@ class ShowWordView(BaseView):
     """Showing words menu"""
     
     def build_into(self, root):
-        
         self.createFrame(root)
-        #self.frame = tkinter.Frame(root)
-        #self.frame.configure(background='#339999') 
-        #self.frame.pack()
         
         self.mainLabel = tkinter.Label(self.frame, text="Browse dictionary", bg="#339999")
         
@@ -309,7 +305,7 @@ class ShowWordView(BaseView):
         self.combo = ttk.Combobox(self.frame, textvariable=self.strvariable)
         self.combo["values"] = ()
         self.combo["state"] = 'readonly'
-        self.combo.bind('<<ComboboxSelected>>', self.updateCurrenttlyDisplayed)
+        self.combo.bind('<<ComboboxSelected>>', self.updateCurrentlyDisplayed)
         
         self.means_label = tkinter.Label(self.frame, text="means", bg="#339999")
         self.meaning = tkinter.Label(self.frame, text="", bg="lightgray")
@@ -328,51 +324,55 @@ class ShowWordView(BaseView):
         self.means_label.pack(fill=tkinter.X, ipady=5, padx=10)
         self.meaning.pack(fill=tkinter.X, ipady=10, padx=10)
         
-        #It should be somewhere else
+        self.combo["values"] = ()
+        
+        for but in self.buttons:
+            but.pack(fill=tkinter.X, pady=10, padx=50)
+
+    def updateCurrentlyDisplayed(self, event):
+        self.meaning["text"] = self.words[self.combo["values"][self.combo.current()]]
+
+    def set_words(self, words):
+        self.words = words
+        self.updateComboboxList()
+
+    def updateComboboxList(self):
         self.combo["values"] = ()
         for key in self.words.keys():
+            print("adding", key)
             self.combo["values"] = self.combo["values"] + (key, )
         
         if len(self.combo["values"]) > 0:
             self.combo.current(0)
             
-        self.updateCurrenttlyDisplayed(None)
+        self.updateCurrentlyDisplayed(None)
         
-        for but in self.buttons:
-            but.pack(fill=tkinter.X, pady=10, padx=50)
-
-    def updateCurrenttlyDisplayed(self, event):
-        #print (self.strvariable)
-        self.meaning["text"] = self.words[self.combo["values"][self.combo.current()]]
-
-    def set_words(self, words):
-        self.words = words
 
 class Controller:
     """Controler responsible for interactions between data and views"""
     def __init__(self, views, model):
-        self.root = tkinter.Tk()
-        self.root.configure(background="#339999")
-        self.init_root()
+        
+        self.initializeRootWindow()
     
         self.model = model
         self.model.phrases.addCallback(self.updateWords)
         
         self.views = views
-
-        #add observer or something similiar. Now do it here
-        self.views["show_words"].set_words(self.model.getAllWords())
-
+        
         for name in self.views.keys():
             self.views[name].set_actions(self.get_actions_for(name))
             self.views[name].build_into(self.root)
         
+        #add observer or something similiar. Now do it here
+        self.views["show_words"].set_words(self.model.getAllWords())
+
+        
         self.currentView = self.views["main_menu"]
         self.currentView.show()
     
-        
-    
-    def init_root(self):
+    def initializeRootWindow(self):
+        self.root = tkinter.Tk()
+        self.root.configure(background="#339999")
         self.root.title("Repeat It")
         self.root.geometry("350x300")
         
