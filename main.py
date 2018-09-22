@@ -257,7 +257,7 @@ translator = GlosbeTranslator()
 
 class BaseView:
     """Base class for all screens"""
-    def set_actions(self, actions):
+    def set_button_commands(self, actions):
         self.actions = actions
         
     def createFrame(self, root, params={}):
@@ -360,15 +360,12 @@ class Controller:
         self.views = views
         
         for name in self.views.keys():
-            self.views[name].set_actions(self.get_actions_for(name))
+            self.views[name].set_button_commands(self.get_actions_for(name))
             self.views[name].build_into(self.root)
         
         #add observer or something similiar. Now do it here
         self.views["show_words"].set_words(self.model.getAllWords())
-
-        
-        self.currentView = self.views["main_menu"]
-        self.currentView.show()
+        self.views["main_menu"].show()
     
     def initializeRootWindow(self):
         self.root = tkinter.Tk()
@@ -386,7 +383,7 @@ class Controller:
             exit(1)
 
     def get_main_menu_actions(self):
-        return  [("Browse words", self.show_words),
+        return  [("Browse words", lambda: (self.views["main_menu"].hide(), self.views["show_words"].show())),
                   ("Add new word", self.addWord),
                  #("Translate phrase", lambda: translator.translate("error")),
                   ("Quit", self.root.destroy)
@@ -395,16 +392,9 @@ class Controller:
                 ]
 
     def get_words_actions(self):
-        return [("Go back", self.show_main),
+        return [("Go back", lambda: (self.views["show_words"].hide(), self.views["main_menu"].show())),
                 ("Quit", self.root.destroy)]
-        
-    def show_words(self):    
-        self.currentView.hide()
-        self.currentView = self.views["show_words"]
-        
-        
-        self.currentView.show()
-        
+
     def updateWords(self, data):
         print("will update words database")    
         self.views["show_words"].set_words(self.model.getAllWords())
@@ -412,11 +402,6 @@ class Controller:
     def addWord(self):
         print("will add word: bee to model")
         self.model.addWord("bee", "polish", "pszczoła")
-        
-    def show_main(self):
-        self.currentView.hide()
-        self.currentView = self.views["main_menu"]
-        self.currentView.show()
         
     def run(self):
         self.root.mainloop() 
