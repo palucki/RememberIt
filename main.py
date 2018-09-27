@@ -83,9 +83,6 @@ translator = GlosbeTranslator()
 
 #exit(1)
 
-
-
-
 app = Controller({"main_menu" : MainMenuView(), 
                   "show_words": ShowWordView()},
                   dictionary)

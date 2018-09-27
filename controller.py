@@ -25,6 +25,13 @@ class Controller:
         self.root.title("Repeat It")
         self.root.geometry("350x300")
         
+        self.quit_button = tkinter.Button(self.root, 
+                                          text="Quit", 
+                                          fg="red",
+                                          command=self.root.destroy)
+        
+        self.quit_button.pack(side=tkinter.BOTTOM, pady=10)
+        
     def get_actions_for(self, view_name):
         if view_name == "main_menu":
             return self.get_main_menu_actions()
@@ -38,14 +45,15 @@ class Controller:
         return  [("Browse words", lambda: (self.views["main_menu"].hide(), self.views["show_words"].show())),
                   ("Add new word", self.addWord),
                  #("Translate phrase", lambda: translator.translate("error")),
-                  ("Quit", self.root.destroy)
+                  #("Quit", self.root.destroy)
                  ##("Add phrase to dictionary",
                   ##("Clear dictionary",
                 ]
 
     def get_words_actions(self):
         return [("Go back", lambda: (self.views["show_words"].hide(), self.views["main_menu"].show())),
-                ("Quit", self.root.destroy)]
+                #("Quit", self.root.destroy)
+                ]
 
     def updateWords(self, data):
         print("will update words database")    
