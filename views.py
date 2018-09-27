@@ -49,7 +49,7 @@ class ShowWordView(BaseView):
         
         self.strvariable = tkinter.StringVar()
         
-        self.combo = ttk.Combobox(self.frame, textvariable=self.strvariable)
+        self.combo = ttk.Combobox(self.frame, textvariable=self.strvariable, width=15)
         self.combo["values"] = ()
         self.combo["state"] = 'readonly'
         self.combo.bind('<<ComboboxSelected>>', self.updateCurrentlyDisplayed)
@@ -66,15 +66,15 @@ class ShowWordView(BaseView):
                                 command=cmd))
 
         self.mainLabel.pack(fill=tkinter.X, ipady=20, padx=10)
-        self.combo.pack(fill = tkinter.X)
+        self.combo.pack()
         
-        self.means_label.pack(fill=tkinter.X, ipady=5, padx=10)
-        self.meaning.pack(fill=tkinter.X, ipady=10, padx=10)
+        self.means_label.pack(ipady=5, padx=10)
+        self.meaning.pack(ipady=10, padx=10)
         
         self.combo["values"] = ()
         
         for but in self.buttons:
-            but.pack(fill=tkinter.X, pady=10, padx=50)
+            but.pack(side=tkinter.LEFT, pady=35, padx=10)
 
     def updateCurrentlyDisplayed(self, event):
         self.meaning["text"] = self.words[self.combo["values"][self.combo.current()]]

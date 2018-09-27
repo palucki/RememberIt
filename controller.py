@@ -52,6 +52,8 @@ class Controller:
 
     def get_words_actions(self):
         return [("Go back", lambda: (self.views["show_words"].hide(), self.views["main_menu"].show())),
+                ("Delete word", lambda: print("Deleting")),
+                ("Edit word", lambda: print("Editing")),
                 #("Quit", self.root.destroy)
                 ]
 
