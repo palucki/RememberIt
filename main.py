@@ -10,7 +10,7 @@ import os
 #my modules
 from controller import Controller
 
-from views import MainMenuView, ShowWordView
+from views import MainMenuView, ShowWordView, EditWordView
 from translator import GlosbeTranslator
 from phrase import Phrase
 from model import Model
@@ -84,7 +84,8 @@ translator = GlosbeTranslator()
 #exit(1)
 
 app = Controller({"main_menu" : MainMenuView(), 
-                  "show_words": ShowWordView()},
+                  "show_words": ShowWordView(),
+                  "edit_word": EditWordView()},
                   dictionary)
 app.run()
 #currentView.root.mainloop()

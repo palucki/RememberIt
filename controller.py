@@ -37,6 +37,8 @@ class Controller:
             return self.get_main_menu_actions()
         elif view_name == "show_words":
             return self.get_words_actions()
+        elif view_name == "edit_word":
+            return self.getEditWordActions()
         else:
             print("No actions found")
             exit(1)
@@ -52,9 +54,14 @@ class Controller:
 
     def get_words_actions(self):
         return [("Go back", lambda: (self.views["show_words"].hide(), self.views["main_menu"].show())),
-                ("Delete word", lambda: self.removeWord(self.views["show_words"].getWordToDelete())),
-                ("Edit word", lambda: print("Editing")),
+                ("Delete word", lambda: self.removeWord(self.views["show_words"].getDisplayedWordAndMeaning())),
+                ("Edit word", lambda: (self.views["show_words"].hide(), self.views["edit_word"].setWord(self.views["show_words"].getDisplayedWordAndMeaning()) ,self.views["edit_word"].show())),
                 #("Quit", self.root.destroy)
+                ]
+
+    def getEditWordActions(self):
+        return [("Go back", lambda: (self.views["edit_word"].hide(), self.views["show_words"].show())),
+                ("Save", lambda: print("Saving")),
                 ]
 
     def updateWords(self, data):
@@ -65,8 +72,8 @@ class Controller:
         print("will add word: bee to model")
         self.model.addWord("bee", "polish", "pszczoła")
         
-    def removeWord(self, word):
-        self.model.removeWord(word)
+    def removeWord(self, wordMeaningTuple):
+        self.model.removeWord(wordMeaningTuple[0])
         
         
     def run(self):

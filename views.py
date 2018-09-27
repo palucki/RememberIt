@@ -94,5 +94,39 @@ class ShowWordView(BaseView):
             
         self.updateCurrentlyDisplayed(None)
 
-    def getWordToDelete(self):
-        return self.combo["values"][self.combo.current()]
+    def getDisplayedWordAndMeaning(self):
+        key = self.combo["values"][self.combo.current()]
+        return (key, self.words[key])
+
+class EditWordView(BaseView):
+    """Editing word menu"""
+    
+    def build_into(self, root):
+        self.createFrame(root)
+        
+        self.mainLabel = tkinter.Label(self.frame, text="Editing word", bg="#339999")        
+        
+        self.text = tkinter.Entry(self.frame, width=15)
+        
+        self.buttons = []
+
+        for (label, cmd) in self.actions:
+            self.buttons.append(tkinter.Button(self.frame, 
+                                text=label, 
+                                fg="black",
+                                command=cmd))
+
+        self.mainLabel.pack(fill=tkinter.X, ipady=20, padx=10)
+        
+        self.text.pack()
+        
+        for but in self.buttons:
+            but.pack(side=tkinter.LEFT, pady=35, padx=10)
+
+    def setWord(self, wordAndMeaningTuple):
+        self.word = wordAndMeaningTuple[0]
+        self.meaning = wordAndMeaningTuple[1]
+        
+        self.mainLabel["text"] = "Editing word '" + self.word + "'"
+        self.text.delete(0, "end")
+        self.text.insert(0, self.meaning)
