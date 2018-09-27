@@ -78,5 +78,7 @@ class Model:
     def getAllWords(self):
         return self.phrases.getData()
     
-    def removeWord(self, phrase):
-        print("Model::removeWord TO BE IMPLEMENTED")
+    def removeWord(self, key):
+        newData = self.phrases.getData()
+        newData.pop(key)
+        self.phrases.setData(newData)

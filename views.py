@@ -93,3 +93,6 @@ class ShowWordView(BaseView):
             self.combo.current(0)
             
         self.updateCurrentlyDisplayed(None)
+
+    def getWordToDelete(self):
+        return self.combo["values"][self.combo.current()]

@@ -52,7 +52,7 @@ class Controller:
 
     def get_words_actions(self):
         return [("Go back", lambda: (self.views["show_words"].hide(), self.views["main_menu"].show())),
-                ("Delete word", lambda: print("Deleting")),
+                ("Delete word", lambda: self.removeWord(self.views["show_words"].getWordToDelete())),
                 ("Edit word", lambda: print("Editing")),
                 #("Quit", self.root.destroy)
                 ]
@@ -64,6 +64,10 @@ class Controller:
     def addWord(self):
         print("will add word: bee to model")
         self.model.addWord("bee", "polish", "pszczoła")
+        
+    def removeWord(self, word):
+        self.model.removeWord(word)
+        
         
     def run(self):
         self.root.mainloop() 
