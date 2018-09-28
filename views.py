@@ -130,3 +130,10 @@ class EditWordView(BaseView):
         self.mainLabel["text"] = "Editing word '" + self.word + "'"
         self.text.delete(0, "end")
         self.text.insert(0, self.meaning)
+
+    
+    def saveNewMeaning(self):
+        self.meaning = self.text.get()
+        
+    def getWordAndMeaning(self):
+        return (self.word, self.meaning)

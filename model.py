@@ -82,3 +82,9 @@ class Model:
         newData = self.phrases.getData()
         newData.pop(key)
         self.phrases.setData(newData)
+        
+    def saveWord(self, wordAndMeaning):
+        word = wordAndMeaning[0]
+        meaning = wordAndMeaning[1]
+        self.addWord(word, "pl", meaning)
+        

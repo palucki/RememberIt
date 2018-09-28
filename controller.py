@@ -61,7 +61,8 @@ class Controller:
 
     def getEditWordActions(self):
         return [("Go back", lambda: (self.views["edit_word"].hide(), self.views["show_words"].show())),
-                ("Save", lambda: print("Saving")),
+                ("Save", lambda: (self.views["edit_word"].saveNewMeaning(),
+                                  self.model.saveWord(self.views["edit_word"].getWordAndMeaning()))),
                 ]
 
     def updateWords(self, data):
