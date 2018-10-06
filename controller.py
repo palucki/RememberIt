@@ -2,7 +2,7 @@ import tkinter
 
 class Controller:
     """Controler responsible for interactions between data and views"""
-    def __init__(self, views, model):
+    def __init__(self, views, model, translator):
         
         self.initializeRootWindow()
     
@@ -10,6 +10,7 @@ class Controller:
         self.model.phrases.addCallback(self.updateWords)
         
         self.views = views
+        self.translator = translator
         
         for name in self.views.keys():
             self.views[name].set_button_commands(self.get_actions_for(name))
@@ -39,13 +40,19 @@ class Controller:
             return self.get_words_actions()
         elif view_name == "edit_word":
             return self.getEditWordActions()
+        elif view_name == "new_word":
+            return self.getNewWordActions()
         else:
             print("No actions found")
             exit(1)
 
     def get_main_menu_actions(self):
-        return  [("Browse words", lambda: (self.views["main_menu"].hide(), self.views["show_words"].show())),
-                  ("Add new word", self.addWord),
+        return  [("Browse words", lambda: (self.views["main_menu"].hide(), 
+                                           self.views["show_words"].show()
+                                           )),
+                  ("Add new word", lambda: (self.views["main_menu"].hide(), 
+                                            self.views["new_word"].show()
+                                            )),
                  #("Translate phrase", lambda: translator.translate("error")),
                   #("Quit", self.root.destroy)
                  ##("Add phrase to dictionary",
@@ -65,6 +72,11 @@ class Controller:
                                   self.model.saveWord(self.views["edit_word"].getWordAndMeaning()))),
                 ]
 
+    def getNewWordActions(self):
+        return [("Go back", lambda: (self.views["new_word"].hide(), self.views["main_menu"].show())),
+                ("Translate in Glosbe", lambda: self.translate(self.views["new_word"].getWord())),
+                ]
+
     def updateWords(self, data):
         print("will update words database")    
         self.views["show_words"].set_words(self.model.getAllWords())
@@ -76,6 +88,9 @@ class Controller:
     def removeWord(self, wordMeaningTuple):
         self.model.removeWord(wordMeaningTuple[0])
         
+    def translate(self, word):
+        print(self.translator.translate(word))
         
+    
     def run(self):
         self.root.mainloop() 

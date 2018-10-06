@@ -137,3 +137,32 @@ class EditWordView(BaseView):
         
     def getWordAndMeaning(self):
         return (self.word, self.meaning)
+
+
+class NewWordView(BaseView):
+    """New word menu"""
+    
+    def build_into(self, root):
+        self.createFrame(root)
+        
+        self.mainLabel = tkinter.Label(self.frame, text="Type english word", bg="#339999")        
+        
+        self.text = tkinter.Entry(self.frame, width=15)
+        
+        self.buttons = []
+
+        for (label, cmd) in self.actions:
+            self.buttons.append(tkinter.Button(self.frame, 
+                                text=label, 
+                                fg="black",
+                                command=cmd))
+
+        self.mainLabel.pack(fill=tkinter.X, ipady=20, padx=10)
+        
+        self.text.pack()
+        
+        for but in self.buttons:
+            but.pack(side=tkinter.LEFT, pady=35, padx=10)
+
+    def getWord(self):
+        return self.text.get()

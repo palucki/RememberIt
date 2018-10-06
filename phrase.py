@@ -7,31 +7,34 @@ class Phrase:
         self.meanings = meanings
 
     def __str__(self):
-        output = "Word: " + self.eng + "in " + lang + "\n";
-        for idx, meaning in enumerate(self.meanings):
-            output += "%3d. %s\n" % (idx, meaning)
+        output = "Word: " + self.eng + " in " + self.lang + " " + self.meanings + "\n";
+        
+        
+        #for multiple meanings:
+        #for idx, meaning in enumerate(self.meanings):
+            #output += "%3d. %s\n" % (idx, meaning)
             
         return output
 
-class EnglishPhrase:
-    """Class representing single entry from Glosbe"""
+#class EnglishPhrase:
+    #"""Class representing single entry from Glosbe"""
 
-    def __init__(self, text):
-        self.text = text
-        self.meanings = []
+    #def __init__(self, text):
+        #self.text = text
+        #self.meanings = []
         
-    def __str__(self):
-        output = "Word: " + self.text + "\n";
-        for idx, meaning in enumerate(self.meanings):
-            output += "%3d. %s\n" % (idx, meaning)
+    #def __str__(self):
+        #output = "Word: " + self.text + "\n";
+        #for idx, meaning in enumerate(self.meanings):
+            #output += "%3d. %s\n" % (idx, meaning)
             
-        return output
+        #return output
         
-    def show(self):        
-        print("Word:", self.text)
-        print("Meanings:")        
-        for idx, meaning in enumerate(self.meanings):
-            print("%3d. %s" % (idx, meaning))
+    #def show(self):        
+        #print("Word:", self.text)
+        #print("Meanings:")        
+        #for idx, meaning in enumerate(self.meanings):
+            #print("%3d. %s" % (idx, meaning))
             
-    def add_meaning(self, phrase):
-        self.meanings.append(phrase)
+    #def add_meaning(self, phrase):
+        #self.meanings.append(phrase)

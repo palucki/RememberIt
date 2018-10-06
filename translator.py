@@ -1,4 +1,5 @@
 import requests
+from phrase import Phrase
 
 class GlosbeTranslator:
     """Client class of Glosbe translator API"""
@@ -14,14 +15,15 @@ class GlosbeTranslator:
         if resp["result"] == "ok":
             print("Successfully translated")
             
-            phrase = EnglishPhrase(word)
             contents = resp["tuc"]
-            
+
             for entry in contents:
                 if "phrase" in entry and "text" in entry["phrase"]:
                     meaning = entry["phrase"]["text"]
-                    #print(meaning)
-                    phrase.add_meaning(meaning)
+                    break 
+                    # if in the future we would like to add multiple meanings:
+                    #phrase.add_meaning(meaning)
+            phrase = Phrase(word, "pol", meaning)
 
             return phrase
         else:
