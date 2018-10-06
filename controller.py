@@ -74,7 +74,7 @@ class Controller:
 
     def getNewWordActions(self):
         return [("Go back", lambda: (self.views["new_word"].hide(), self.views["main_menu"].show())),
-                ("Translate in Glosbe", lambda: self.translate(self.views["new_word"].getWord())),
+                ("Translate in Glosbe", lambda: self.model.addWord(*self.translate(self.views["new_word"].getWord()))),
                 ]
 
     def updateWords(self, data):
@@ -89,6 +89,8 @@ class Controller:
         self.model.removeWord(wordMeaningTuple[0])
         
     def translate(self, word):
+        #return ("ball", "pol", "piłka")
+        
         try:
             print(self.translator.translate(word))
         except:
