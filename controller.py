@@ -89,7 +89,11 @@ class Controller:
         self.model.removeWord(wordMeaningTuple[0])
         
     def translate(self, word):
-        print(self.translator.translate(word))
+        try:
+            print(self.translator.translate(word))
+        except:
+            print("Unable to connect to translator. Check your Internet connection")
+        
         
     
     def run(self):
