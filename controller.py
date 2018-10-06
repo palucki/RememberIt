@@ -53,7 +53,7 @@ class Controller:
                   ("Add new word", lambda: (self.views["main_menu"].hide(), 
                                             self.views["new_word"].show()
                                             )),
-                 #("Translate phrase", lambda: translator.translate("error")),
+                 ("Save database", lambda: self.model.saveDb()),
                   #("Quit", self.root.destroy)
                  ##("Add phrase to dictionary",
                   ##("Clear dictionary",

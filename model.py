@@ -88,3 +88,14 @@ class Model:
         meaning = wordAndMeaning[1]
         self.addWord(word, "pl", meaning)
         
+    def saveDb(self):
+        dbData = self.db.get_all()
+        modelData = self.getAllWords()
+        
+        # we need to replace "meanings" (list) with single meaning.
+        # to avoid "unhashable type list" error 
+        
+        print(set(dbData.keys()))
+        print(set(modelData.keys()))
+        set(dbData.values())
+        set(modelData.values())
