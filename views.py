@@ -166,3 +166,8 @@ class NewWordView(BaseView):
 
     def getWord(self):
         return self.text.get()
+        
+    def show(self):
+        self.text.delete(0, tkinter.END)
+        super().show()
+        
