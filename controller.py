@@ -1,4 +1,5 @@
 import tkinter
+from phrase import Phrase
 
 class Controller:
     """Controler responsible for interactions between data and views"""
@@ -74,25 +75,26 @@ class Controller:
 
     def getNewWordActions(self):
         return [("Go back", lambda: (self.views["new_word"].hide(), self.views["main_menu"].show())),
-                ("Translate in Glosbe", lambda: self.model.addWord(*self.translate(self.views["new_word"].getWord()))),
+                ("Translate in Glosbe", lambda: self.addWord(self.translate(self.views["new_word"].getWord()))),
                 ]
 
     def updateWords(self, data):
         print("will update words database")    
         self.views["show_words"].set_words(self.model.getAllWords())
         
-    def addWord(self):
-        print("will add word: bee to model")
-        self.model.addWord("bee", "polish", "pszczoła")
+    def addWord(self, phrase):
+        #word, lang, meaning):
+        #print("will add word:", phrase)
+        self.model.addWord(phrase.eng, phrase.lang, phrase.meanings)
         
     def removeWord(self, wordMeaningTuple):
         self.model.removeWord(wordMeaningTuple[0])
         
     def translate(self, word):
-        #return ("ball", "pol", "piłka")
+        #return Phrase("ball", "pol", "piłka")
         
         try:
-            print(self.translator.translate(word))
+            return self.translator.translate(word)
         except:
             print("Unable to connect to translator. Check your Internet connection")
         

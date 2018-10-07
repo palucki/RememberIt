@@ -28,9 +28,9 @@ class MongoDbProxy:
         for i, phrase in enumerate(self.db[self.table].find()):
             eng = phrase["english"]
             lang = phrase["lang"]
-            meanings = phrase[lang]
+            meaning = phrase[lang]
             
-            words[eng] = meanings
+            words[eng] = meaning
 
         return words
             
@@ -92,10 +92,22 @@ class Model:
         dbData = self.db.get_all()
         modelData = self.getAllWords()
         
-        # we need to replace "meanings" (list) with single meaning.
-        # to avoid "unhashable type list" error 
+        #That's for future optimization: update db instead of adding it all
+                
+        dbKeysSet = set(dbData.keys())
+        dbValuesSet = set(dbData.values())
         
-        print(set(dbData.keys()))
-        print(set(modelData.keys()))
-        set(dbData.values())
-        set(modelData.values())
+        modelKeysSet = set(modelData.keys())
+        modelValuesSet = set(modelData.values())
+
+        newRecordsKeys = modelKeysSet - dbKeysSet
+        deletedRecordsKeys = dbKeysSet - modelKeysSet
+        
+        if len(newRecordsKeys):
+            print(newRecordsKeys)
+            
+        if len(deletedRecordsKeys):
+            print(deletedRecordsKeys)
+        
+        print("Saving database...")
+        

@@ -24,6 +24,7 @@ class GlosbeTranslator:
                     # if in the future we would like to add multiple meanings:
                     #phrase.add_meaning(meaning)
             phrase = Phrase(word, "pol", meaning)
+            #print(phrase)
 
             return phrase
         else:
