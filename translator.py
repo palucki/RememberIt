@@ -8,7 +8,7 @@ class GlosbeTranslator:
     
     def translate(self, word):
         self.payload["phrase"] = word
-        raw_resp = requests.get(self.base_url, params=self.payload)
+        raw_resp = requests.get(self.base_url, params=self.payload, timeout=5)
         #print (raw_resp.text)
         resp = raw_resp.json()
 
@@ -28,4 +28,4 @@ class GlosbeTranslator:
 
             return phrase
         else:
-            print("Request failed!!!")
+            raise Exception("Translator is not responsive")

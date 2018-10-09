@@ -1,5 +1,6 @@
 import tkinter
 from phrase import Phrase
+from views import TranslatePopup
 
 class Controller:
     """Controler responsible for interactions between data and views"""
@@ -94,11 +95,14 @@ class Controller:
         #return Phrase("ball", "pol", "piłka")
         
         try:
-            return self.translator.translate(word)
+            translation = self.translator.translate(word)
         except:
             print("Unable to connect to translator. Check your Internet connection")
         
-        
+        popup = TranslatePopup()
+        popup.show(translation)
+    
+        return translation
     
     def run(self):
         self.root.mainloop() 

@@ -1,5 +1,6 @@
 import tkinter
 from tkinter import ttk
+from phrase import Phrase
 
 class BaseView:
     """Base class for all screens"""
@@ -171,3 +172,14 @@ class NewWordView(BaseView):
         self.text.delete(0, tkinter.END)
         super().show()
         
+class TranslatePopup:
+    def show(self, phrase):
+        toplevel = tkinter.Toplevel()
+        label1 = tkinter.Label(toplevel, text='"' + phrase.eng + '"', height=1, width=30, pady=5)
+        label1.pack()
+        label2 = tkinter.Label(toplevel, text="means", height=1, width=30, pady=5)
+        label2.pack()
+        label3 = tkinter.Label(toplevel, text='"' + phrase.meanings + '"', height=1, width=30, pady=5)
+        label3.pack()
+        okButton = tkinter.Button(toplevel, text="Ok", fg="black", command=toplevel.destroy, pady=10)
+        okButton.pack()
