@@ -2,6 +2,7 @@ import random
 from pymongo import MongoClient
 
 from observable import Observable
+from phrase import Phrase
 
 class MongoDbProxy:
     """Proxy for MongoDB"""
@@ -15,7 +16,9 @@ class MongoDbProxy:
     def get_db(self):
         return self.db
         
-    def add_phrase(self, record):
+    def add_phrase(self, phrase):
+        #[{ "english": eng, "polish" : pl}]
+        record = {"english" : phrase.eng, "polish" : phrase.meanings}
         self.db[self.table].insert(record)
         self.count = self.db[self.table].find().count()
         
@@ -27,8 +30,8 @@ class MongoDbProxy:
         words = {}
         for i, phrase in enumerate(self.db[self.table].find()):
             eng = phrase["english"]
-            lang = phrase["lang"]
-            meaning = phrase[lang]
+            #lang = phrase["lang"]
+            meaning = phrase["polish"]
             
             words[eng] = meaning
 
@@ -104,10 +107,13 @@ class Model:
         deletedRecordsKeys = dbKeysSet - modelKeysSet
         
         if len(newRecordsKeys):
-            print(newRecordsKeys)
+            for newKey in newRecordsKeys:
+                self.db.add_phrase(Phrase(newKey, "pl", modelData[newKey]))
+                
             
         if len(deletedRecordsKeys):
             print(deletedRecordsKeys)
         
-        print("Saving database...")
+        #Handle also value update
         
+        print("Saving database...")
