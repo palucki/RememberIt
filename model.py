@@ -58,7 +58,9 @@ class MongoDbProxy:
             return True
         else:
             return False
-            
+    def drop_record(self, eng):
+        self.db[self.table].delete_one({"english":eng}) 
+        
     def drop_db(self):
         print("Dropping")
         self.db.self.table.drop()
@@ -109,10 +111,10 @@ class Model:
         if len(newRecordsKeys):
             for newKey in newRecordsKeys:
                 self.db.add_phrase(Phrase(newKey, "pl", modelData[newKey]))
-                
-            
+
         if len(deletedRecordsKeys):
-            print(deletedRecordsKeys)
+            for deletedKey in deletedRecordsKeys:
+                self.db.drop_record(deletedKey)
         
         #Handle also value update
         
