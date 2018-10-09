@@ -9,7 +9,7 @@ class BaseView:
         
     def createFrame(self, root, params={}):
         self.frame = tkinter.Frame(root)
-        self.frame.configure(background='white') 
+        self.frame.configure(background='#6bb9f0') 
         
     def show(self):
         self.frame.pack()
@@ -26,14 +26,14 @@ class MainMenuView(BaseView):
         
         self.mainLabel = tkinter.Label(self.frame, 
                                        text="Repeat It - learn new english words easily & efficently",
-                                       bg="#339999")
+                                       bg="#6bb9f0")
         self.buttons = []
 
         for (label, cmd) in self.actions:
             self.buttons.append(tkinter.Button(self.frame, 
                                 text=label, 
                                 fg="black",
-                                bg="#33996E",
+                                bg="#3498db",
                                 command=cmd))
 
         self.mainLabel.pack(fill=tkinter.X, ipady=20, padx=10)
@@ -46,7 +46,7 @@ class ShowWordView(BaseView):
     def build_into(self, root):
         self.createFrame(root)
         
-        self.mainLabel = tkinter.Label(self.frame, text="Browse dictionary", bg="#339999")
+        self.mainLabel = tkinter.Label(self.frame, text="Browse dictionary", bg="#6bb9f0")
         
         self.strvariable = tkinter.StringVar()
         
@@ -55,8 +55,8 @@ class ShowWordView(BaseView):
         self.combo["state"] = 'readonly'
         self.combo.bind('<<ComboboxSelected>>', self.updateCurrentlyDisplayed)
         
-        self.means_label = tkinter.Label(self.frame, text="means", bg="#339999")
-        self.meaning = tkinter.Label(self.frame, text="", bg="lightgray")
+        self.means_label = tkinter.Label(self.frame, text="means", bg="#6bb9f0")
+        self.meaning = tkinter.Label(self.frame, text="", bg="#6bb9f0", fg="white")
         
         self.buttons = []
 
@@ -64,6 +64,7 @@ class ShowWordView(BaseView):
             self.buttons.append(tkinter.Button(self.frame, 
                                 text=label, 
                                 fg="black",
+                                bg="#3498db",
                                 command=cmd))
 
         self.mainLabel.pack(fill=tkinter.X, ipady=20, padx=10)
@@ -87,7 +88,7 @@ class ShowWordView(BaseView):
     def updateComboboxList(self):
         self.combo["values"] = ()
         for key in self.words.keys():
-            print("adding", key)
+            #print("adding", key)
             self.combo["values"] = self.combo["values"] + (key, )
         
         if len(self.combo["values"]) > 0:
@@ -105,7 +106,7 @@ class EditWordView(BaseView):
     def build_into(self, root):
         self.createFrame(root)
         
-        self.mainLabel = tkinter.Label(self.frame, text="Editing word", bg="#339999")        
+        self.mainLabel = tkinter.Label(self.frame, text="Editing word", bg="#6bb9f0")        
         
         self.text = tkinter.Entry(self.frame, width=15)
         
@@ -115,6 +116,7 @@ class EditWordView(BaseView):
             self.buttons.append(tkinter.Button(self.frame, 
                                 text=label, 
                                 fg="black",
+                                bg="#3498db",
                                 command=cmd))
 
         self.mainLabel.pack(fill=tkinter.X, ipady=20, padx=10)
@@ -146,7 +148,7 @@ class NewWordView(BaseView):
     def build_into(self, root):
         self.createFrame(root)
         
-        self.mainLabel = tkinter.Label(self.frame, text="Type english word", bg="#339999")        
+        self.mainLabel = tkinter.Label(self.frame, text="Type english word", bg="#6bb9f0")        
         
         self.text = tkinter.Entry(self.frame, width=15)
         
@@ -156,6 +158,7 @@ class NewWordView(BaseView):
             self.buttons.append(tkinter.Button(self.frame, 
                                 text=label, 
                                 fg="black",
+                                bg="#3498db",
                                 command=cmd))
 
         self.mainLabel.pack(fill=tkinter.X, ipady=20, padx=10)
@@ -174,12 +177,12 @@ class NewWordView(BaseView):
         
 class TranslatePopup:
     def show(self, phrase):
-        toplevel = tkinter.Toplevel()
-        label1 = tkinter.Label(toplevel, text='"' + phrase.eng + '"', height=1, width=30, pady=5)
+        toplevel = tkinter.Toplevel(bg="#1e8bc3")
+        label1 = tkinter.Label(toplevel, text='"' + phrase.eng + '"', height=1, width=30, pady=5, bg="#1e8bc3")
         label1.pack()
-        label2 = tkinter.Label(toplevel, text="means", height=1, width=30, pady=5)
+        label2 = tkinter.Label(toplevel, text="means", height=1, width=30, pady=5, bg="#1e8bc3")
         label2.pack()
-        label3 = tkinter.Label(toplevel, text='"' + phrase.meanings + '"', height=1, width=30, pady=5)
+        label3 = tkinter.Label(toplevel, text='"' + phrase.meanings + '"', height=1, width=30, pady=5, fg="white", bg="#1e8bc3")
         label3.pack()
         okButton = tkinter.Button(toplevel, text="Ok", fg="black", command=toplevel.destroy, pady=10)
         okButton.pack()

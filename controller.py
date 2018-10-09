@@ -24,7 +24,7 @@ class Controller:
     
     def initializeRootWindow(self):
         self.root = tkinter.Tk()
-        self.root.configure(background="#339999")
+        self.root.configure(background="#6bb9f0")
         self.root.title("Repeat It")
         self.root.geometry("350x300")
         
