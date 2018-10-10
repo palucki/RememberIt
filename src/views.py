@@ -25,7 +25,7 @@ class MainMenuView(BaseView):
         self.createFrame(root)
         
         self.mainLabel = tkinter.Label(self.frame, 
-                                       text="Repeat It - learn new english words easily & efficently",
+                                       text="RememberIt - store new english words easily & efficently",
                                        bg="#6bb9f0")
         self.buttons = []
 
